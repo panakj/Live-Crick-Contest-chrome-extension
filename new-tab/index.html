@@ -1,0 +1,478 @@
+<!doctype html>
+<html ng-app="app" ng-csp>
+
+<head>
+    <title>Live Cricket Score</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://suggestqueries.google.com https://affiliate.flipkart.com">
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://suggestqueries.google.com "> -->
+    <script src="../thirdparty/jQuery/jquery-1.11.3.min.js"></script>
+    <script src="../thirdparty/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../thirdparty/jQuery-UI/jquery-ui.js"></script>
+    <link rel="stylesheet" href="../thirdparty/jQuery-UI/jquery-ui.css">
+
+    <!-- Latest compiled JavaScript -->
+    <link href="../thirdparty/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="../thirdparty/angular/angular.min.js"></script>
+    <link href="../thirdparty/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+
+<body class="popup-body" ng-controller="UsersCtrl" ng-cloak>
+    <nav class="navbar navbar-default navbar-custom">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">
+                    <span class="upwork-assistant-text">
+                        <span class="upwork-text">Live Crick Contest</span>
+                    </span>
+                </a>
+            </div>
+            <form class="navbar-form navbar-left" id="frmsearch" method="get" action="https://www.google.com/search">
+                <img class="google-icon" src="../icons/google.png" width="20">
+                <div class="input-group">
+                    <input id="txtGoogleSearch" type="text" name="q" autofocus class="form-control search-control"
+                        placeholder="Google Search">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default search-btn" form="frmsearch" type="submit">Search</button>
+                    </span>
+                </div>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#">
+                        <img src="../icons/wallet.svg" width="18" />
+                        <b>Rs. 0.00</b>
+                        <img src="../icons/plus.svg" width="18" />
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                        aria-expanded="false">
+                        <b>
+                            Welcome
+                            <span class="theme-color">
+                                Guest
+                        </b>
+                        </span>
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+
+                        <li><a href="#">Preference</a></li>
+                        <li><a href="#">Share</a></li>
+                        <li><a href="http://www.pritisoftnest.com" target="blank">About as</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Sign in</a></li>
+                        <!-- <li role="separator" class="divider"></li>
+                          <li><a href="#">Separated link</a></li> -->
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div ng-if="!IsOnline">
+        <div>
+            <br />
+            <br />
+            <h3 class="text-center text-danger"> No internet Found. Check your connection ot try again.</h3>
+        </div>
+    </div>
+    <div ng-if="IsOnline">
+        <div class="sidenav">
+            <span>
+                <b> On Going Matches</b>
+            </span>
+            <br />
+            <br />
+            <a href="#about" ng-repeat="item in LiveData"
+                ng-class="{'active':item.match_number==selectedMatche.match_number}" ng-click="changeMatch(item)">
+
+                <img ng-src="{{item.flag1}}" width="30">
+                {{item.t1}} vs {{item.t2}}
+                <img ng-src="{{item.flag2}}" width="30">
+                <span class="live-span" ng-if="item.status==1"><i class="fa fa-circle" aria-hidden="true"></i>
+                    Live</span>
+            </a>
+            <div class="ad" ng-if="FKDOD">
+                    <a target="_blank"  ng-href="{{FKDOD.url}}" >
+                <div class="ad-header">
+                    <div class="row">
+                        <small>Ad</spam>
+                            <img src="../icons/flipkart-logo.png" width="100" />
+                    </div>
+                </div>
+                <div class="ad-body">
+                        <div class="price">
+                                {{FKDOD.title}}
+                        </div>
+                    <img ng-src="{{FKDOD.imageUrls[2].url}}" width="220" />
+                </div>
+                <div class="ad-footer">
+                    {{FKDOD.name}}
+                    <br />
+                    <small>
+                        {{FKDOD.description}}
+                    </small>
+                    <br />
+                    <b>
+                    {{FKDOD.title}}
+                </b>
+                </div>
+            </a> 
+            </div>
+        </div>
+        <div class="main-container">
+            <div>
+                <div>
+                    <div class='bookmark'>
+                        <span class="bookmark-mark"> {{selectedMatche.t1}} vs {{selectedMatche.t2}}</span>
+                    </div>
+                    <div class='status-bookmark'>
+                        <span class="status-bookmark-mark match-status-live" ng-if="selectedMatche.status==1"><i
+                                class="fa fa-circle" aria-hidden="true"></i>&nbsp;Live</span>
+                        <span class="status-bookmark-mark match-status-com" ng-if="selectedMatche.status==2">
+                            Completed</span>
+                        <span class="status-bookmark-mark match-status-up" ng-if="selectedMatche.status==0">
+                            Upcoming</span>
+                    </div>
+                    <div class="header-stiker {{selectedMatche.id}}">
+                        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel"
+                            data-interval="0">
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner" role="listbox">
+                                <div class="item active">
+                                    <h4 class="text-center">
+                                        <span>
+                                            {{selectedMatche.series_name}}
+                                            ({{selectedMatche.match_number}})
+                                        </span>
+                                    </h4>
+                                    <div class="row">
+                                        <div class="col-sm-3 text-center">
+                                            <img ng-src="{{selectedMatche.flag1}}" class="team-logo" width="75">
+                                            <br />
+                                            <br />
+                                            <b>
+                                                {{selectedMatche.score2}}/
+                                                {{selectedMatche.wicket2}}</b>
+                                            <br />
+                                            {{CalculateOver(selectedMatche.ballsdone2)}} OVERS
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <h4 class="text-center time">
+                                                <img src="../icons/clock.svg" width="25">
+                                                {{selectedMatche.date | date:'dd MMM yyyy | h:mm a'}} (IST)
+                                            </h4>
+                                            <h4 class="text-center blue-color">
+                                                <b>
+                                                    {{selectedMatche.team1}}&nbsp;VS&nbsp;{{selectedMatche.team2}}
+                                                </b>
+                                            </h4>
+                                            <h5 class="text-center">{{selectedMatche.comment}}</h5>
+                                        </div>
+                                        <div class="col-sm-3 text-center">
+                                            <img ng-src="{{selectedMatche.flag2}}" class="team-logo" width="75">
+                                            <br />
+                                            <br />
+                                            <b>
+                                                {{selectedMatche.score}}/
+                                                {{selectedMatche.wicket}}
+                                            </b>
+                                            <br />
+                                            {{CalculateOver(selectedMatche.ballsdone)}} OVERS
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <a ng-if="selectedMatche.index!=0" ng-click="ChangeMatchNextPrev(selectedMatche.index-1)"
+                                class="left carousel-control" href="#carousel-example-generic" role="button"
+                                data-slide="prev">
+                                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a ng-if="selectedMatche.index!=LiveData.length-1"
+                                ng-click="ChangeMatchNextPrev(selectedMatche.index+1)" class="right carousel-control"
+                                href="#carousel-example-generic" role="button" data-slide="next">
+                                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid">
+
+                    <!-- Nav tabs -->
+                    <div class="custom-tab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab"
+                                    data-toggle="tab"> Match Info</a></li>
+                            <li role="presentation"><a href="#profile" aria-controls="profile" role="tab"
+                                    data-toggle="tab">Scorecard</a></li>
+                            <!-- <li role="presentation"><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab">Messages</a></li>
+                  <li role="presentation"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Settings</a></li> -->
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <br />
+                            <div role="tabpanel" class="tab-pane active" id="home">
+                                <div class="panel panel-default" ng-if="selectedMatche.status!=0">
+                                    <!-- <div class="panel-heading">Panel heading without title</div> -->
+                                    <div class="panel-body">
+                                        <table class="table table-condensed" ng-if="ScoreCards.team1.players">
+                                            <thead>
+                                                <tr>
+                                                    <th>BATSMEN</th>
+                                                    <th>R</th>
+                                                    <th>B</th>
+                                                    <th>4s</th>
+                                                    <th>6s</th>
+                                                    <th>SR</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>{{P2Data.p1}}</td>
+                                                    <td>{{P1Data.p1r}}</td>
+                                                    <td>{{P1Data.p1b}}</td>
+                                                    <td>{{P1Data.p14}}</td>
+                                                    <td>{{P1Data.p16}}</td>
+                                                    <td>{{100 * P1Data.p1r/P1Data.p1b | number : 2}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>{{P2Data.p2}}</td>
+                                                    <td>{{P1Data.p2r}}</td>
+                                                    <td>{{P1Data.p2b}}</td>
+                                                    <td>{{P1Data.p24}}</td>
+                                                    <td>{{P1Data.p26}}</td>
+                                                    <td>{{100 * P1Data.p2r/P1Data.p2b | number : 2}}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default" ng-if="selectedMatche.status!=0">
+                                    <!-- <div class="panel-heading">Panel heading without title</div> -->
+                                    <div class="panel-body">
+
+                                        <table class="table table-condensed" ng-if="ScoreCards.team1.bowlers">
+                                            <thead>
+                                                <tr>
+                                                    <th>BOWLING</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th>
+                                                        Bowler
+                                                    </th>
+                                                    <td>
+                                                        {{P2Data.b}}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th>
+                                                        Recent
+                                                    </th>
+                                                    <td>
+                                                        {{P1Data.lb}}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="profile">
+                                <div>
+                                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" role="tab" id="headingOne">
+                                                <h4 class="panel-title">
+                                                    <a role="button" data-toggle="collapse" data-parent="#accordion"
+                                                        href="#collapseOne" aria-expanded="true"
+                                                        aria-controls="collapseOne">
+                                                        {{ScoreCards.team1.teamName}} innings <span
+                                                            ng-if="ScoreCards.team1.total">
+                                                            [{{ScoreCards.team1.total}}]
+                                                        </span>
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                                                aria-labelledby="headingOne">
+                                                <div class="panel-body">
+                                                    <table class="table table-condensed"
+                                                        ng-if="ScoreCards.team1.players">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>BATSMEN</th>
+                                                                <th></th>
+                                                                <th>R</th>
+                                                                <th>B</th>
+                                                                <th>4s</th>
+                                                                <th>6s</th>
+                                                                <th>SR</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="(key,item) in ScoreCards.team1.players">
+                                                                <td class="theme-color">
+                                                                    {{GetBatsmenName(item.player.playerName,true)}}</td>
+                                                                <td>{{GetBatsmenName(item.player.playerName,false)}}
+                                                                </td>
+                                                                <td>{{item.player.run}}</td>
+                                                                <td>{{item.player.balls}}</td>
+                                                                <td>{{item.player.fours}}</td>
+                                                                <td>{{item.player.sixes}}</td>
+                                                                <td>{{100*item.player.run/item.player.balls | number : 2}}
+                                                                </td>
+                                                            </tr>
+                                                            <tr ng-if="ScoreCards.team1.extras">
+                                                                <td>Extras</td>
+                                                                <td colspan="6" class="text-right">
+                                                                    {{ScoreCards.team1.extras}}</td>
+                                                            </tr>
+                                                            <tr ng-if="ScoreCards.team1.total">
+                                                                <th>Total</th>
+                                                                <td colspan="6" class="text-right">
+                                                                    {{ScoreCards.team1.total}}</td>
+                                                            </tr>
+                                                            <tr ng-if="ScoreCards.team1.yet_to_bat">
+                                                                <th>Yet to bat</th>
+                                                                <td colspan="6" class="text-right">
+                                                                    {{ScoreCards.team1.yet_to_bat}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <table class="table table-condensed"
+                                                        ng-if="ScoreCards.team1.bowlers">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>BOWLING</th>
+                                                                <th>O</th>
+                                                                <th>M</th>
+                                                                <th>R</th>
+                                                                <th>W</th>
+                                                                <th>ECON</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="(key,item) in ScoreCards.team1.bowlers">
+                                                                <td class="theme-color">
+                                                                    {{item.bowler.bowlerName}}</td>
+                                                                <td>{{item.bowler.overs}}</td>
+                                                                <td>{{item.bowler.maiden}}</td>
+                                                                <td>{{item.bowler.run}}</td>
+                                                                <td>{{item.bowler.wickets}}</td>
+                                                                <td>{{item.bowler.run/item.bowler.overs}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" role="tab" id="headingTwo">
+                                                <h4 class="panel-title">
+                                                    <a class="collapsed" role="button" data-toggle="collapse"
+                                                        data-parent="#accordion" href="#collapseTwo"
+                                                        aria-expanded="false" aria-controls="collapseTwo">
+                                                        {{ScoreCards.team2.teamName}} innings <span
+                                                            ng-if="ScoreCards.team2.total">
+                                                            [{{ScoreCards.team2.total}}]
+                                                        </span>
+                                                    </a>
+                                                </h4>
+                                            </div>
+                                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                                                aria-labelledby="headingTwo">
+                                                <div class="panel-body">
+                                                    <table class="table table-condensed"
+                                                        ng-if="ScoreCards.team2.players">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>BATSMEN</th>
+                                                                <th></th>
+                                                                <th>R</th>
+                                                                <th>B</th>
+                                                                <th>4s</th>
+                                                                <th>6s</th>
+                                                                <th>SR</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="(key,item) in ScoreCards.team2.players">
+                                                                <td class="theme-color">
+                                                                    {{GetBatsmenName(item.player.playerName,true)}}</td>
+                                                                <td>{{GetBatsmenName(item.player.playerName,false)}}
+                                                                </td>
+                                                                <td>{{item.player.run}}</td>
+                                                                <td>{{item.player.balls}}</td>
+                                                                <td>{{item.player.fours}}</td>
+                                                                <td>{{item.player.sixes}}</td>
+                                                                <td>{{100*item.player.run/item.player.balls | number : 2}}
+                                                                </td>
+                                                            </tr>
+                                                            <tr ng-if="ScoreCards.team2.extras">
+                                                                <td>Extras</td>
+                                                                <td colspan="6" class="text-right">
+                                                                    {{ScoreCards.team2.extras}}</td>
+                                                            </tr>
+                                                            <tr ng-if="ScoreCards.team2.total">
+                                                                <th>Total</th>
+                                                                <td colspan="6" class="text-right">
+                                                                    {{ScoreCards.team2.total}}</td>
+                                                            </tr>
+                                                            <tr ng-if="ScoreCards.team2.yet_to_bat">
+                                                                <th>Yet to bat</th>
+                                                                <td colspan="6" class="text-right">
+                                                                    {{ScoreCards.team2.yet_to_bat}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                    <table class="table table-condensed"
+                                                        ng-if="ScoreCards.team2.bowlers">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>BOWLING</th>
+                                                                <th>O</th>
+                                                                <th>M</th>
+                                                                <th>R</th>
+                                                                <th>W</th>
+                                                                <th>ECON</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr ng-repeat="(key,item) in ScoreCards.team2.bowlers">
+                                                                <td class="theme-color">
+                                                                    {{item.bowler.bowlerName}}</td>
+                                                                <td>{{item.bowler.overs}}</td>
+                                                                <td>{{item.bowler.maiden}}</td>
+                                                                <td>{{item.bowler.run}}</td>
+                                                                <td>{{item.bowler.wickets}}</td>
+                                                                <td>{{item.bowler.run/item.bowler.overs}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
